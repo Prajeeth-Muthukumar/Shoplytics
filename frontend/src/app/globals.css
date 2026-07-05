@@ -1,16 +1,30 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-@theme{
-  --color-shoplytics-bg: #f8fafc;
-  --color-shoplytics-surface: #ffffff;
-  --color-shoplytics-primary: #059669;
-  --color-shoplytics-primaryHover: #047857;
-  --color-shoplytics-textMain: #0f172a;
-  --color-shoplytics-textMuted: #64748b;
-  --color-shoplytics-footerBg: #0b0f19;
+:root {
+  --color-primary: #0F172A;
+  --color-accent: #0E9F6E;
+  --color-highlight: #FBBF24;
+  --color-bg: #F8FAFC;
+  --color-card: #FFFFFF;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
