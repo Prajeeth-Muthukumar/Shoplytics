@@ -284,55 +284,6 @@ function FeaturedCollections() {
   );
 }
 
-// ─── SECTION 5: MOST COMPARED THIS WEEK ──────────────────────────────────────
-
-function MostComparedThisWeek() {
-  return (
-    <section className="px-4 sm:px-6 lg:px-8 py-10 max-w-7xl mx-auto">
-      <SectionHeader
-        title="Most Compared This Week"
-        subtitle="See what others are deciding between"
-        showAll={true}
-      />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {comparisons.map((comp) => (
-          <div
-            key={comp.id}
-            className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-3"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col items-center text-center flex-1 gap-1">
-                <div className="w-12 h-12 rounded-xl bg-[#F8FAFC] flex items-center justify-center text-2xl">
-                  {comp.emoji1}
-                </div>
-                <p className="text-xs font-semibold text-[#0F172A] leading-tight">
-                  {comp.product1}
-                </p>
-              </div>
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#0F172A] flex items-center justify-center">
-                <span className="text-[10px] font-extrabold text-white tracking-widest">
-                  VS
-                </span>
-              </div>
-              <div className="flex flex-col items-center text-center flex-1 gap-1">
-                <div className="w-12 h-12 rounded-xl bg-[#F8FAFC] flex items-center justify-center text-2xl">
-                  {comp.emoji2}
-                </div>
-                <p className="text-xs font-semibold text-[#0F172A] leading-tight">
-                  {comp.product2}
-                </p>
-              </div>
-            </div>
-            <button className="w-full text-xs font-semibold text-[#10B981] border border-[#10B981] rounded-xl py-2 hover:bg-[#10B981] hover:text-white transition-all duration-150 flex items-center justify-center gap-1">
-              Compare Now
-              <ArrowRight size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 // ─── SECTION 6: POPULAR BRANDS ───────────────────────────────────────────────
 
@@ -361,40 +312,7 @@ function PopularBrands() {
   );
 }
 
-// ─── SECTION 7: NEW ARRIVALS ──────────────────────────────────────────────────
 
-function NewArrivals() {
-  return (
-    <section className="px-4 sm:px-6 lg:px-8 py-10 max-w-7xl mx-auto">
-      <SectionHeader
-        title="New Arrivals"
-        subtitle="Just landed — compare before you buy"
-        showAll={true}
-      />
-      <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible">
-        {newArrivals.map((item) => (
-          <div
-            key={item.id}
-            className="min-w-[140px] sm:min-w-0 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col items-center text-center gap-3 cursor-pointer relative flex-shrink-0 sm:flex-shrink"
-          >
-            <span className="absolute top-2.5 right-2.5 text-[9px] font-extrabold bg-[#10B981] text-white px-2 py-0.5 rounded-full tracking-wide">
-              NEW
-            </span>
-            <div className="w-full aspect-square rounded-xl bg-[#F8FAFC] flex items-center justify-center text-4xl">
-              {item.emoji}
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-[#0F172A] leading-snug">
-                {item.name}
-              </p>
-              <p className="text-xs text-[#64748B] mt-0.5">{item.price}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 // ─── SECTION 8: BENEFITS STRIP ───────────────────────────────────────────────
 
@@ -425,9 +343,9 @@ export default function HomeBody() {
       <RecommendedForYou />
       <PriceDropsToday />
       <FeaturedCollections />
-      <MostComparedThisWeek />
+      
       <PopularBrands />
-      <NewArrivals />
+      
       <BenefitsStrip />
     </main>
   );
