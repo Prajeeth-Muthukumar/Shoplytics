@@ -1,7 +1,18 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = () => {
+    const q = searchTerm.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+  };
+
   return (
     <nav className="sticky top-0 z-50 w-full bg-shoplytics-surface/80 backdrop-blur-md border-b border-shoplytics-textMuted/20 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,21 +49,37 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             
             {/* Search Bar (Hidden on small screens) */}
-            <div className="hidden lg:block relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-4 w-4 text-shoplytics-textMuted group-focus-within:text-shoplytics-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <form
+              onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+              className="hidden lg:block relative group"
+              role="search"
+            >
+              {/* Search icon – acts as submit button */}
+              <button
+                type="submit"
+                className="absolute inset-y-0 left-0 pl-3 flex items-center text-shoplytics-textMuted group-focus-within:text-shoplytics-primary transition-colors"
+                aria-label="Submit search"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </div>
-              <input 
-                type="text" 
-                placeholder="Search products..." 
+              </button>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="block w-64 pl-10 pr-3 py-2 border border-shoplytics-textMuted/30 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-shoplytics-primary/50 focus:border-shoplytics-primary bg-shoplytics-bg transition-all duration-300 placeholder-shoplytics-textMuted text-shoplytics-textMain"
+                aria-label="Search products"
               />
-            </div>
+            </form>
 
             {/* Mobile Search Icon */}
-            <button className="lg:hidden p-2 text-shoplytics-textMuted hover:text-shoplytics-primary transition-colors rounded-full hover:bg-shoplytics-bg">
+            <button
+              onClick={handleSearch}
+              className="lg:hidden p-2 text-shoplytics-textMuted hover:text-shoplytics-primary transition-colors rounded-full hover:bg-shoplytics-bg"
+              aria-label="Search"
+            >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
