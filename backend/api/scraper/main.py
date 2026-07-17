@@ -29,8 +29,13 @@ def run_scrapers():
     else:
         for idx, item in enumerate(amazon_results, 1):
             print(f"\nResult #{idx}:")
-            print(f"Title: {item['title']}")
-            print(f"Price: {item['price']}")
+            print(f"\nResult #{idx}:")
+            print(f"Title:               {item['title']}")
+            print(f"Discounted Price:    {item['discounted_price']}")
+            print(f"Original Price:      {item['original_price']}")
+            print(f"Discount Percentage: {item['discount_percentage']}")
+            print(f"Rating:              {item['rating']}")
+            print(f"Image URL:           {item['image_url']}")
             
     print("\n=========================================")
     print("            FLIPKART RESULTS             ")
