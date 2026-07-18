@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import re
 
 def scrape_flipkart(search_term):
-    
     print(f"\n[Flipkart Scraper] Searching for: '{search_term}' using Playwright...")
     url = f"https://www.flipkart.com/search?q={search_term.replace(' ', '+')}"
     
@@ -18,105 +17,89 @@ def scrape_flipkart(search_term):
             page.wait_for_timeout(3000) 
             html = page.content()
             browser.close()
+            
             soup = BeautifulSoup(html, 'html.parser')
             results = []
-            list_containers = soup.find_all("a", class_="k7wcnx")
-            grid_containers = soup.find_all("div", class_="bLCLBY")
             
-            if list_containers:
-                print(f"[Flipkart Scraper] Detected List Layout. Found {len(list_containers)} items.")
-                containers = list_containers
-                is_list = True
-            elif grid_containers:
-                print(f"[Flipkart Scraper] Detected Grid Layout. Found {len(grid_containers)} items.")
-                containers = grid_containers
-                is_list = False
-            else:
+            containers = soup.find_all("div", {"data-id": True})
+            
+            if not containers:
                 print("[Flipkart Scraper] No standard product containers found on page.")
                 return []
-
             
-            for card in containers:
+            for index, card in enumerate(containers):
                 
-                title = "Title not found"
-                if is_list:
-                    title_el = card.find(class_="RG5Slk")
-                    if title_el:
-                        title = title_el.get_text().strip()
-                else:
-                    
-                    brand_el = card.find(class_="Fo1I0b")
-                    desc_el = card.find(class_="atJtCj")
-                    brand = brand_el.get_text().strip() if brand_el else ""
-                    desc = desc_el.get_text().strip() if desc_el else ""
-                    if brand and desc:
-                        title = f"{brand} - {desc}"
-                    elif desc:
-                        title = desc
-                    elif brand:
-                        title = brand
-
-                
-                if title == "Title not found" or not title:
-                    img_el = card.find("img")
-                    if img_el and img_el.get("alt"):
-                        title = img_el.get("alt").strip()
-
-                
-                discounted_price = "Price not found"
-                price_el = card.find(class_="hZ3P6w") 
-                if price_el:
-                    discounted_price = price_el.get_text().strip()
-
-                
-                original_price = "Original price not found"
-                orig_price_el = card.find(class_="kRYCnD") 
-                if orig_price_el:
-                    original_price = orig_price_el.get_text().strip()
-
-                
-                discount_percentage = "Discount not found"
-                discount_el = card.find(class_="HQe8jr") 
-                if discount_el:
-                    discount_percentage = discount_el.get_text().strip()
-                else:
-                    
-                    discount_text_el = card.find(string=re.compile(r"%\s*(off|Off)"))
-                    if discount_text_el:
-                        discount_percentage = discount_text_el.strip()
-
-                
-                rating = "Rating not found"
-                
-                rating_el = card.find(class_=re.compile(r"(MKiFS6|CjyrHS)"))
-                if rating_el:
-                    rating = rating_el.get_text().strip()
-                else:
-                    
-                    for el in card.find_all(True):
-                        text = el.get_text().strip()
-                        if re.match(r"^[1-5]\.[0-9]$", text):
-                            rating = text
-                            break
-
-                
-                image_url = "Image not found"
+                # 2. Extract Name
+                name = "Title not found"
                 img_el = card.find("img")
-                if img_el:
-                    image_url = img_el.get("src") or img_el.get("data-src") or "Image not found"
-                    if image_url.startswith("//"):
-                        image_url = "https:" + image_url
+                if img_el and img_el.get("alt"):
+                    name = img_el.get("alt").strip()
+                else:
+                    # Fallback if image alt is missing
+                    texts = [t.strip() for t in card.stripped_strings if len(t.strip()) > 10]
+                    if texts: name = texts[0]
 
-               
-                results.append({
-                    'title': title,
-                    'discounted_price': discounted_price,
-                    'original_price': original_price,
-                    'discount_percentage': discount_percentage,
-                    'rating': rating,
-                    'image_url': image_url
-                })
+                # 3. Extract Prices (Find all text with a Rupee symbol)
+                price = 0
+                originalPrice = 0
+                prices = [t.strip() for t in card.stripped_strings if '₹' in t]
                 
+                if len(prices) > 0:
+                    clean_price = re.sub(r'[^0-9.]', '', prices[0])
+                    if clean_price: price = int(float(clean_price))
+                    originalPrice = price # default to same if no discount
+                    
+                if len(prices) > 1:
+                    clean_orig = re.sub(r'[^0-9.]', '', prices[1])
+                    if clean_orig: originalPrice = int(float(clean_orig))
+
+                # 4. Extract Discount (Converted to Integer)
+                discount = 0
+                discount_text = card.find(string=re.compile(r"%\s*(off|Off)"))
+                if discount_text:
+                    raw_discount = discount_text.strip().strip('()')
+                    clean_discount = re.sub(r'[^0-9]', '', raw_discount)
+                    if clean_discount: discount = int(clean_discount)
+
+                # 5. Extract Rating (Converted to Float)
+                rating = 4.5
+                rating_text = card.find(string=re.compile(r"^[1-5]\.[0-9]$"))
+                if rating_text:
+                    clean_rating = re.search(r'([0-9.]+)', rating_text.strip())
+                    if clean_rating: rating = float(clean_rating.group(1))
+
+                # 6. Extract Review Count 
+                # (Flipkart puts reviews in parentheses right next to the rating usually)
+                reviewCount = "0"
+                review_text = card.find(string=re.compile(r"^\([0-9,]+\)$"))
+                if review_text:
+                    reviewCount = review_text.strip().strip('()')
+                elif rating_text:
+                    # Fallback: grab the very next string after the rating!
+                    next_text = rating_text.find_next(string=True)
+                    if next_text and next_text.strip().startswith('('):
+                        reviewCount = next_text.strip().strip('()')
+
+                # 7. Extract Image URL
+                image = "Image not found"
+                if img_el:
+                    image = img_el.get("src") or img_el.get("data-src") or "Image not found"
+                    if image.startswith("//"):
+                        image = "https:" + image
+               
+                # 8. Package it beautifully to match your React component!
+                results.append({
+                    'id': f"flipkart-{index}",
+                    'name': name,
+                    'image': image,
+                    'rating': rating,
+                    'reviewCount': reviewCount,
+                    'price': price,
+                    'originalPrice': originalPrice,
+                    'discount': discount,
+                    'store': 'flipkart',
+                    'freeDelivery': True
+                })
                 
                 if len(results) >= 5:
                     break
@@ -126,4 +109,3 @@ def scrape_flipkart(search_term):
     except Exception as e:
         print(f"[Flipkart Scraper] An error occurred: {e}")
         return []
-
