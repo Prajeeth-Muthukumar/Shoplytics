@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from .models import TopProduct
 
 def get_top_products(request):
-    # Pull all 15 products from the database, perfectly sorted by their rank!
     products = TopProduct.objects.all().order_by('rank')
     
     # Package them up into a list

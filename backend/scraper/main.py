@@ -1,6 +1,6 @@
 import sys
-from amazon import scrape_amazon
-from flipkart import scrape_flipkart
+from backend.scraper.amazon import scrape_amazon
+from backend.scraper.flipkart import scrape_flipkart
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
