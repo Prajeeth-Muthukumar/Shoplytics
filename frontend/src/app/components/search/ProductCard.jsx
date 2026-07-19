@@ -75,6 +75,7 @@ function StarRating({ rating }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ProductCard({ product }) {
   const {
+    id,
     name,
     image,
     rating = 4.5,
