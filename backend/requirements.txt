@@ -1,6 +1,8 @@
+APScheduler==3.11.3
 asgiref==3.11.1
 beautifulsoup4==4.15.0
 Django==6.0.6
+django-apscheduler==0.7.0
 django-cors-headers==4.9.0
 djangorestframework==3.17.1
 greenlet==3.5.3
@@ -10,3 +12,4 @@ soupsieve==2.8.4
 sqlparse==0.5.5
 typing_extensions==4.16.0
 tzdata==2026.2
+tzlocal==5.4.4

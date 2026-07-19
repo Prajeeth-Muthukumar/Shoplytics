@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 
-from .scraper.amazon import scrape_amazon
-from .scraper.flipkart import scrape_flipkart
+from scraper.amazon import scrape_amazon
+from scraper.flipkart import scrape_flipkart
 
 def get_product(request):
     product_query = request.GET.get('q', '')

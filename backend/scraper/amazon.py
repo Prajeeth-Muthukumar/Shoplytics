@@ -23,49 +23,73 @@ def scrape_amazon(search_term):
             results = []
             items = soup.find_all('div', {'data-component-type': 's-search-result'})
             
-            for item in items:
+            for index, item in enumerate(items):
+                # 1. Name
                 title_element = item.find('h2')
                 if title_element:
-                    title = title_element.text.strip()
+                    name = title_element.text.strip()
                 else:
                     continue
                     
-                discounted_price = "Price not found"
+                # 2. Price (Converted to Number)
+                price = 0
                 price_container = item.find('span', class_='a-price')
                 if price_container:
                     price_element = price_container.find('span', class_='a-offscreen')
                     if price_element:
-                        discounted_price = price_element.text.strip()
+                        raw_price = price_element.text.strip()
+                        clean_price = re.sub(r'[^0-9.]', '', raw_price)
+                        if clean_price: price = int(float(clean_price))
                 
-                original_price = "Original price not found"
+                # 3. Original Price (Converted to Number)
+                originalPrice = price
                 orig_price_container = item.find('span', class_='a-text-price')
                 if orig_price_container:
                     orig_price_element = orig_price_container.find('span', class_='a-offscreen')
                     if orig_price_element:
-                        original_price = orig_price_element.text.strip()
+                        raw_orig = orig_price_element.text.strip()
+                        clean_orig = re.sub(r'[^0-9.]', '', raw_orig)
+                        if clean_orig: originalPrice = int(float(clean_orig))
                 
-                discount_percentage = "Discount not found"
+                # 4. Discount (Converted to Number)
+                discount = 0
                 discount_element = item.find(string=re.compile(r'%\s*off', re.IGNORECASE))
                 if discount_element:
-                    discount_percentage = discount_element.strip().strip('()')
+                    raw_discount = discount_element.strip().strip('()')
+                    clean_discount = re.sub(r'[^0-9]', '', raw_discount)
+                    if clean_discount: discount = int(clean_discount)
                 
-                rating = "Rating not found"
+                # 5. Rating (Converted to Float)
+                rating = 4.5
                 rating_element = item.find('span', class_='a-icon-alt')
                 if rating_element:
-                    rating = rating_element.text.strip()
+                    raw_rating = rating_element.text.strip()
+                    match = re.search(r'([0-9.]+)', raw_rating)
+                    if match: rating = float(match.group(1))
                 
-                image_url = "Image not found"
+                # 6. Review Count (Scraping the actual number of reviews!)
+                reviewCount = "0"
+                review_element = item.find('span', class_='s-underline-text')
+                if review_element:
+                    reviewCount = review_element.text.strip()
+                
+                # 7. Image URL
+                image = "Image not found"
                 img_element = item.find('img', class_='s-image')
                 if img_element and img_element.get('src'):
-                    image_url = img_element.get('src')
+                    image = img_element.get('src')
                     
                 results.append({
-                    'title': title,
-                    'discounted_price': discounted_price,
-                    'original_price': original_price,
-                    'discount_percentage': discount_percentage,
+                    'id': f"amazon-{index}",
+                    'name': name,
+                    'image': image,
                     'rating': rating,
-                    'image_url': image_url
+                    'reviewCount': reviewCount,
+                    'price': price,
+                    'originalPrice': originalPrice,
+                    'discount': discount,
+                    'store': 'amazon',
+                    'freeDelivery': True
                 })
                 
                 if len(results) >= 5:

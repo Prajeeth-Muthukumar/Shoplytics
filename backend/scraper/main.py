@@ -1,8 +1,7 @@
 import sys
-from amazon import scrape_amazon
-from flipkart import scrape_flipkart
+from backend.scraper.amazon import scrape_amazon
+from backend.scraper.flipkart import scrape_flipkart
 
-# Attempt to configure console output to UTF-8 to handle currency symbols (like ₹) on Windows without crashing
 try:
     sys.stdout.reconfigure(encoding='utf-8')
 except AttributeError:
@@ -29,13 +28,14 @@ def run_scrapers():
     else:
         for idx, item in enumerate(amazon_results, 1):
             print(f"\nResult #{idx}:")
-            print(f"\nResult #{idx}:")
-            print(f"Title:               {item['title']}")
-            print(f"Discounted Price:    {item['discounted_price']}")
-            print(f"Original Price:      {item['original_price']}")
-            print(f"Discount Percentage: {item['discount_percentage']}")
-            print(f"Rating:              {item['rating']}")
-            print(f"Image URL:           {item['image_url']}")
+            print(f"Name:                {item['name']}")
+            print(f"Current Price:       ₹{item['price']:,}")
+            print(f"Original Price:      ₹{item['originalPrice']:,}")
+            print(f"Discount Percentage: {item['discount']}% OFF")
+            print(f"Rating:              {item['rating']} Stars")
+            print(f"Reviews:             {item['reviewCount']}")
+            print(f"Image URL:           {item['image']}")
+            print(f"Free Delivery:       {item['freeDelivery']}")
             
     print("\n=========================================")
     print("            FLIPKART RESULTS             ")
@@ -45,12 +45,14 @@ def run_scrapers():
     else:
         for idx, item in enumerate(flipkart_results, 1):
             print(f"\nResult #{idx}:")
-            print(f"Title:               {item['title']}")
-            print(f"Discounted Price:    {item['discounted_price']}")
-            print(f"Original Price:      {item['original_price']}")
-            print(f"Discount Percentage: {item['discount_percentage']}")
-            print(f"Rating:              {item['rating']}")
-            print(f"Image URL:           {item['image_url']}")
+            print(f"Name:                {item['name']}")
+            print(f"Current Price:       ₹{item['price']:,}")
+            print(f"Original Price:      ₹{item['originalPrice']:,}")
+            print(f"Discount Percentage: {item['discount']}% OFF")
+            print(f"Rating:              {item['rating']} Stars")
+            print(f"Reviews:             {item['reviewCount']}")
+            print(f"Image URL:           {item['image']}")
+            print(f"Free Delivery:       {item['freeDelivery']}")
             
     print("\n=========================================")
     print("            Scraping Complete            ")
